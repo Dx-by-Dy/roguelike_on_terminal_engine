@@ -1,18 +1,26 @@
 use engine::{
-    common::{point::Point, positions::SurfacePosition, size::Size},
+    component::{point::Point, size::Size, timestamp::Timestamp, transformation::Transformation},
+    data_master::DataMasterI,
     game::Game,
-    ui::{
-        configs::{MountingPoint, MountingPointKind, SurfaceConfig, TerminalConfig, UIConfig},
-        draw_unit::{DrawUnit, UnitModificator},
-    },
+    transformation_master::TransformationMasterI,
+    ui::configs::{MountingPoint, MountingPointKind, SurfaceConfig, TerminalConfig, UIConfig},
 };
+use engine_macros::Component;
 
-use std::{
-    io::{self},
-    thread::sleep,
-};
+fn start(game: &mut Game) {
+    let timestamp = game.current_timestamp().next();
+    println!("{:?}", timestamp);
+    game.add_transformation(Timestamp::new(timestamp.value + 99), game.current_pointer());
+}
 
-fn main() -> io::Result<()> {
+use engine::component::Component;
+
+#[derive(Component)]
+struct A {
+    a: usize,
+}
+
+fn main() {
     let ui_config = UIConfig {
         terminal_config: TerminalConfig {
             terminal_size: Size::new(80, 40),
@@ -24,39 +32,42 @@ fn main() -> io::Result<()> {
     };
 
     let mut game = Game::new(ui_config);
+    let pointer = game.set(Transformation::new(start)).finalize();
+    game.add_transformation(Timestamp { value: 0 }, pointer);
+    game.run();
 
-    for y in 0..20 {
-        for x in 0..20 {
-            let unit = match (x, y) {
-                (0, 0) => DrawUnit::new('█', UnitModificator::DFLT_UNIT_MODIFICATOR),
-                (0, val) if val == 20 - 1 => {
-                    DrawUnit::new('█', UnitModificator::DFLT_UNIT_MODIFICATOR)
-                }
-                (val, 0) if val == 20 - 1 => {
-                    DrawUnit::new('█', UnitModificator::DFLT_UNIT_MODIFICATOR)
-                }
-                (valx, valy) if valx == 20 - 1 && valy == 20 - 1 => {
-                    DrawUnit::new('█', UnitModificator::DFLT_UNIT_MODIFICATOR)
-                }
-                (0, _) => DrawUnit::new('│', UnitModificator::DFLT_UNIT_MODIFICATOR),
-                (val, _) if val == 20 - 1 => {
-                    DrawUnit::new('│', UnitModificator::DFLT_UNIT_MODIFICATOR)
-                }
-                (_, 0) => DrawUnit::new('—', UnitModificator::DFLT_UNIT_MODIFICATOR),
-                (_, val) if val == 20 - 1 => {
-                    DrawUnit::new('—', UnitModificator::DFLT_UNIT_MODIFICATOR)
-                }
-                _ => DrawUnit::new(' ', UnitModificator::DFLT_UNIT_MODIFICATOR),
-            };
-            if unit.symbol() != ' ' {
-                game.update_surface(SurfacePosition { x, y }, 0, unit);
-            }
-        }
-    }
+    // for y in 0..20 {
+    //     for x in 0..20 {
+    //         let unit = match (x, y) {
+    //             (0, 0) => DrawUnit::new('█', UnitModificator::DFLT_UNIT_MODIFICATOR),
+    //             (0, val) if val == 20 - 1 => {
+    //                 DrawUnit::new('█', UnitModificator::DFLT_UNIT_MODIFICATOR)
+    //             }
+    //             (val, 0) if val == 20 - 1 => {
+    //                 DrawUnit::new('█', UnitModificator::DFLT_UNIT_MODIFICATOR)
+    //             }
+    //             (valx, valy) if valx == 20 - 1 && valy == 20 - 1 => {
+    //                 DrawUnit::new('█', UnitModificator::DFLT_UNIT_MODIFICATOR)
+    //             }
+    //             (0, _) => DrawUnit::new('│', UnitModificator::DFLT_UNIT_MODIFICATOR),
+    //             (val, _) if val == 20 - 1 => {
+    //                 DrawUnit::new('│', UnitModificator::DFLT_UNIT_MODIFICATOR)
+    //             }
+    //             (_, 0) => DrawUnit::new('—', UnitModificator::DFLT_UNIT_MODIFICATOR),
+    //             (_, val) if val == 20 - 1 => {
+    //                 DrawUnit::new('—', UnitModificator::DFLT_UNIT_MODIFICATOR)
+    //             }
+    //             _ => DrawUnit::new(' ', UnitModificator::DFLT_UNIT_MODIFICATOR),
+    //         };
+    //         if unit.symbol() != ' ' {
+    //             game.update_surface(SurfacePosition { x, y }, 0, unit);
+    //         }
+    //     }
+    // }
 
-    game.redraw();
+    // game.redraw();
 
-    sleep(std::time::Duration::from_secs(10));
+    // sleep(std::time::Duration::from_secs(10));
 
     // loop {
     //     sleep(Duration::from_millis(3000));
@@ -73,6 +84,4 @@ fn main() -> io::Result<()> {
     //         }
     //     }
     // }
-
-    Ok(())
 }

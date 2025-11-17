@@ -1,4 +1,6 @@
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
+use crate::component::Component;
+
+#[derive(Component, Debug, Clone, Copy, PartialEq, Eq, Hash)]
 pub struct Point {
     pub x: i16,
     pub y: i16,

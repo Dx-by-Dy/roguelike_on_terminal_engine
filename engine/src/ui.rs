@@ -1,5 +1,4 @@
 pub mod draw_unit;
-pub mod drawable_entity;
 
 pub(crate) mod user_event_gateway;
 
@@ -8,7 +7,7 @@ mod surface;
 mod terminal;
 
 use crate::{
-    common::{positions::SurfacePosition, user_event::UserEvent},
+    component::{positions::SurfacePosition, user_event::UserEvent},
     ui::{
         configs::{MountingPoint, UIConfig},
         draw_unit::DrawUnit,
@@ -17,12 +16,12 @@ use crate::{
     },
 };
 
-pub struct UI {
+pub struct UserInterface {
     terminal: Terminal,
     user_event_gateway: UserEventGateway,
 }
 
-impl UI {
+impl UserInterface {
     pub fn new(config: UIConfig) -> Self {
         Self {
             terminal: Terminal::new(config.terminal_config),

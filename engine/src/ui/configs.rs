@@ -1,4 +1,4 @@
-use crate::common::{point::Point, size::Size};
+use crate::component::{point::Point, size::Size};
 
 pub struct UIConfig {
     pub terminal_config: TerminalConfig,

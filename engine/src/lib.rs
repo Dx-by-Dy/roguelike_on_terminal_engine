@@ -1,14 +1,5 @@
-pub mod common;
-pub mod ui;
+pub mod component;
+pub mod data_master;
 pub mod game;
-
-// #[cfg(test)]
-// mod tests {
-//     use super::*;
-
-//     #[test]
-//     fn it_works() {
-//         let result = add(2, 2);
-//         assert_eq!(result, 4);
-//     }
-// }
+pub mod transformation_master;
+pub mod ui;

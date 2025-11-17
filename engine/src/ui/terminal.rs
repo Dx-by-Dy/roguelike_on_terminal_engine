@@ -3,7 +3,7 @@ use std::io::{Stdout, Write, stdout};
 use crossterm::{ExecutableCommand, QueueableCommand, cursor, style::PrintStyledContent, terminal};
 
 use crate::{
-    common::{
+    component::{
         positions::{SurfacePosition, TerminalPosition},
         size::Size,
     },
@@ -22,20 +22,20 @@ pub struct Terminal {
 
 impl Terminal {
     pub fn new(config: TerminalConfig) -> Self {
-        let mut out = stdout();
+        // let mut out = stdout();
 
-        crossterm::terminal::enable_raw_mode().unwrap();
+        // crossterm::terminal::enable_raw_mode().unwrap();
 
-        out.execute(crossterm::terminal::EnterAlternateScreen)
-            .unwrap();
-        out.execute(crossterm::cursor::Hide).unwrap();
-        out.execute(crossterm::terminal::SetSize(
-            config.terminal_size.x,
-            config.terminal_size.y,
-        ))
-        .unwrap();
-        out.execute(terminal::Clear(terminal::ClearType::All))
-            .unwrap();
+        // out.execute(crossterm::terminal::EnterAlternateScreen)
+        //     .unwrap();
+        // out.execute(crossterm::cursor::Hide).unwrap();
+        // out.execute(crossterm::terminal::SetSize(
+        //     config.terminal_size.x,
+        //     config.terminal_size.y,
+        // ))
+        // .unwrap();
+        // out.execute(terminal::Clear(terminal::ClearType::All))
+        //     .unwrap();
 
         Self {
             out: stdout(),

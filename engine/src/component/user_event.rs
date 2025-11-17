@@ -1,10 +1,10 @@
 pub mod key_event;
 
-use {crate::common::size::Size, key_event::KeyEvent};
+use crate::component::{Component, size::Size};
 
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+#[derive(Component, Debug, Clone, Copy, PartialEq, Eq)]
 pub enum UserEvent {
-    KeyEvent(KeyEvent),
+    KeyEvent(key_event::KeyEvent),
     Resize(Size),
 }
 

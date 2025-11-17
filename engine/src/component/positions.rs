@@ -1,4 +1,6 @@
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
+use crate::component::Component;
+
+#[derive(Component, Debug, Clone, Copy, PartialEq, Eq, Hash)]
 pub struct SurfacePosition {
     pub x: u16,
     pub y: u16,
@@ -10,7 +12,7 @@ impl SurfacePosition {
     }
 }
 
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
+#[derive(Component, Debug, Clone, Copy, PartialEq, Eq, Hash)]
 pub struct TerminalPosition {
     pub x: u16,
     pub y: u16,

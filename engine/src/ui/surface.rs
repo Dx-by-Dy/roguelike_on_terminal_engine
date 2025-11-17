@@ -1,7 +1,7 @@
 use std::collections::HashSet;
 
 use crate::{
-    common::{
+    component::{
         point::Point,
         positions::{SurfacePosition, TerminalPosition},
         size::Size,

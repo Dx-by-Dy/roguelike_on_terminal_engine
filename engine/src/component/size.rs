@@ -1,4 +1,6 @@
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+use crate::component::Component;
+
+#[derive(Component, Debug, Clone, Copy, PartialEq, Eq)]
 pub struct Size {
     pub x: u16,
     pub y: u16,

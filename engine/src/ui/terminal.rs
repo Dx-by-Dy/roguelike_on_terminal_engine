@@ -1,55 +1,90 @@
-use std::io::{Stdout, Write, stdout};
-
-use crossterm::{ExecutableCommand, QueueableCommand, cursor, style::PrintStyledContent, terminal};
-
-use crate::{
-    component::{
-        positions::{SurfacePosition, TerminalPosition},
-        size::Size,
+use {
+    crate::{
+        component::{
+            positions::{SurfacePosition, TerminalPosition},
+            ref_to_surface::RefToSurface,
+            size::Size,
+        },
+        ui::{
+            configs::{MountingPoint, SurfaceConfig, UIConfig},
+            draw_unit::DrawUnit,
+            surface::Surface,
+        },
     },
-    ui::{
-        configs::{MountingPoint, TerminalConfig},
-        draw_unit::DrawUnit,
-        surface::Surface,
+    crossterm::{ExecutableCommand, QueueableCommand, cursor, style::PrintStyledContent, terminal},
+    std::{
+        collections::HashMap,
+        io::{Stdout, Write, stdout},
     },
 };
+
+pub trait TerminalI {
+    fn redraw(&mut self);
+    fn add_surface(&mut self, surf_conf: SurfaceConfig) -> RefToSurface;
+    fn update_surface(
+        &mut self,
+        pos: SurfacePosition,
+        surface_ref: RefToSurface,
+        unit: DrawUnit,
+    ) -> Result<(), TerminalError>;
+    fn degrade_surface(
+        &mut self,
+        pos: SurfacePosition,
+        surface_ref: RefToSurface,
+    ) -> Result<Option<DrawUnit>, TerminalError>;
+    fn change_mounting_point(
+        &mut self,
+        mounting_point: MountingPoint,
+        surface_ref: RefToSurface,
+    ) -> Result<(), TerminalError>;
+}
+
+pub enum TerminalError {
+    NotExistSurface,
+}
 
 pub struct Terminal {
     out: Stdout,
     size: Size,
-    surfaces: Vec<Surface>,
+    surfaces: HashMap<usize, Surface>,
 }
 
 impl Terminal {
-    pub fn new(config: TerminalConfig) -> Self {
-        // let mut out = stdout();
+    pub fn new(config: UIConfig) -> Self {
+        let mut out = stdout();
 
-        // crossterm::terminal::enable_raw_mode().unwrap();
+        crossterm::terminal::enable_raw_mode().unwrap();
 
-        // out.execute(crossterm::terminal::EnterAlternateScreen)
-        //     .unwrap();
-        // out.execute(crossterm::cursor::Hide).unwrap();
-        // out.execute(crossterm::terminal::SetSize(
-        //     config.terminal_size.x,
-        //     config.terminal_size.y,
-        // ))
-        // .unwrap();
-        // out.execute(terminal::Clear(terminal::ClearType::All))
-        //     .unwrap();
+        out.execute(crossterm::terminal::EnterAlternateScreen)
+            .unwrap();
+        out.execute(crossterm::cursor::Hide).unwrap();
+        out.execute(crossterm::terminal::SetSize(
+            config.terminal_size.x,
+            config.terminal_size.y,
+        ))
+        .unwrap();
+        out.execute(terminal::Clear(terminal::ClearType::All))
+            .unwrap();
 
         Self {
             out: stdout(),
             size: config.terminal_size,
-            surfaces: config
-                .surface_confs
-                .into_iter()
-                .map(|s_conf| Surface::new(s_conf))
-                .collect(),
+            surfaces: HashMap::default(),
         }
     }
 
-    pub fn redraw(&mut self) {
-        for surface in &mut self.surfaces {
+    fn transform_position(
+        surface: &Surface,
+        pos: SurfacePosition,
+        term_size: Size,
+    ) -> Option<TerminalPosition> {
+        surface.transform_position(pos, term_size)
+    }
+}
+
+impl TerminalI for Terminal {
+    fn redraw(&mut self) {
+        for (_, surface) in &mut self.surfaces {
             while let Some((surf_pos, unit)) = surface.next() {
                 if let Some(term_pos) = Self::transform_position(surface, surf_pos, self.size) {
                     self.out
@@ -63,24 +98,47 @@ impl Terminal {
         self.out.flush().unwrap();
     }
 
-    pub fn update_surface(&mut self, pos: SurfacePosition, surface_id: usize, unit: DrawUnit) {
-        self.surfaces[surface_id].forward(pos, unit);
+    fn add_surface(&mut self, surf_conf: SurfaceConfig) -> RefToSurface {
+        let mut i = 0;
+        while self.surfaces.contains_key(&i) {
+            i += 1;
+        }
+        self.surfaces.insert(i, Surface::new(surf_conf));
+        RefToSurface::new(i)
     }
 
-    pub fn degrade_surface(&mut self, pos: SurfacePosition, surface_id: usize) -> Option<DrawUnit> {
-        self.surfaces[surface_id].backward(pos)
-    }
-
-    pub fn change_mounting_point(&mut self, mounting_point: MountingPoint, surface_id: usize) {
-        self.surfaces[surface_id].change_mounting_point(mounting_point);
-    }
-
-    fn transform_position(
-        surface: &Surface,
+    fn update_surface(
+        &mut self,
         pos: SurfacePosition,
-        term_size: Size,
-    ) -> Option<TerminalPosition> {
-        surface.transform_position(pos, term_size)
+        surface_ref: RefToSurface,
+        unit: DrawUnit,
+    ) -> Result<(), TerminalError> {
+        self.surfaces
+            .get_mut(&surface_ref.value)
+            .map(|surf| surf.forward(pos, unit))
+            .ok_or(TerminalError::NotExistSurface)
+    }
+
+    fn degrade_surface(
+        &mut self,
+        pos: SurfacePosition,
+        surface_ref: RefToSurface,
+    ) -> Result<Option<DrawUnit>, TerminalError> {
+        self.surfaces
+            .get_mut(&surface_ref.value)
+            .map(|surf: &mut Surface| surf.backward(pos))
+            .ok_or(TerminalError::NotExistSurface)
+    }
+
+    fn change_mounting_point(
+        &mut self,
+        mounting_point: MountingPoint,
+        surface_ref: RefToSurface,
+    ) -> Result<(), TerminalError> {
+        self.surfaces
+            .get_mut(&surface_ref.value)
+            .map(|surf| surf.change_mounting_point(mounting_point))
+            .ok_or(TerminalError::NotExistSurface)
     }
 }
 

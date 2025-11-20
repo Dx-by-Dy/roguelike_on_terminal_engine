@@ -1,12 +1,7 @@
 use crate::component::{point::Point, size::Size};
 
 pub struct UIConfig {
-    pub terminal_config: TerminalConfig,
-}
-
-pub struct TerminalConfig {
     pub terminal_size: Size,
-    pub surface_confs: Vec<SurfaceConfig>,
 }
 
 pub struct SurfaceConfig {

@@ -157,12 +157,9 @@ impl Iterator for Surface {
         match self.changed_pos.iter().next().copied() {
             Some(pos) => {
                 self.changed_pos.remove(&pos);
-                Some((
-                    pos,
-                    self.data[pos.y as usize][pos.x as usize]
-                        .get_unit()
-                        .unwrap(),
-                ))
+                self.data[pos.y as usize][pos.x as usize]
+                    .get_unit()
+                    .and_then(|unit| Some((pos, unit)))
             }
             None => None,
         }

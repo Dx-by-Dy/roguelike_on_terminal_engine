@@ -1,11 +1,12 @@
+use engine::ui::terminal::TerminalI;
 use engine::{
     component::{point::Point, size::Size, timestamp::Timestamp, transformation::Transformation},
     data_master::DataMasterI,
     game::Game,
     transformation_master::TransformationMasterI,
-    ui::configs::{MountingPoint, MountingPointKind, SurfaceConfig, TerminalConfig, UIConfig},
+    ui::configs::{MountingPoint, MountingPointKind, SurfaceConfig, UIConfig},
 };
-use engine_macros::Component;
+use std::process::exit;
 
 fn start(game: &mut Game) {
     let timestamp = game.current_timestamp().next();
@@ -13,27 +14,26 @@ fn start(game: &mut Game) {
     game.add_transformation(Timestamp::new(timestamp.value + 99), game.current_pointer());
 }
 
-use engine::component::Component;
-
-#[derive(Component)]
-struct A {
-    a: usize,
+fn end(_game: &mut Game) {
+    exit(0)
 }
 
 fn main() {
     let ui_config = UIConfig {
-        terminal_config: TerminalConfig {
-            terminal_size: Size::new(80, 40),
-            surface_confs: vec![SurfaceConfig::new(
-                Size::new(20, 20),
-                MountingPoint::new(Point::new(70, 10), MountingPointKind::DownLeftCorner),
-            )],
-        },
+        terminal_size: Size::new(80, 40),
     };
 
     let mut game = Game::new(ui_config);
+
+    game.add_surface(SurfaceConfig::new(
+        Size::new(80, 40),
+        MountingPoint::new(Point::new(0, 0), MountingPointKind::UpperLeftCorner),
+    ));
+
     let pointer = game.set(Transformation::new(start)).finalize();
     game.add_transformation(Timestamp { value: 0 }, pointer);
+    let pointer = game.set(Transformation::new(end)).finalize();
+    game.add_transformation(Timestamp { value: 1000 }, pointer);
     game.run();
 
     // for y in 0..20 {

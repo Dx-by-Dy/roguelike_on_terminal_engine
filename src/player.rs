@@ -80,8 +80,6 @@ pub fn player_move_up(game: &mut Game) {
         pos_ref.y -= 1
     }
 
-    println!("!!!");
-
     game.call(game.get_pointer_by_name(addr!(player_draw)).unwrap());
     game.redraw();
 }

@@ -52,7 +52,7 @@ macro_rules! __delegate_TerminalI {
             &mut self,
             pos: crate::component::positions::SurfacePosition,
             surface_ref: crate::component::ref_to_surface::RefToSurface,
-        ) -> Result<Option<crate::ui::draw_unit::DrawUnit>, crate::ui::terminal::TerminalError> {
+        ) -> Result<crate::ui::draw_unit::DrawUnit, crate::ui::terminal::TerminalError> {
             self.$field.degrade_surface(pos, surface_ref)
         }
 

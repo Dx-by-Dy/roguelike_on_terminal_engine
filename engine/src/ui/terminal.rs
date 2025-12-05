@@ -32,7 +32,7 @@ pub trait TerminalI {
         &mut self,
         pos: SurfacePosition,
         surface_ref: RefToSurface,
-    ) -> Result<Option<DrawUnit>, TerminalError>;
+    ) -> Result<DrawUnit, TerminalError>;
     fn change_mounting_point(
         &mut self,
         mounting_point: MountingPoint,
@@ -132,7 +132,7 @@ impl TerminalI for Terminal {
         &mut self,
         pos: SurfacePosition,
         surface_ref: RefToSurface,
-    ) -> Result<Option<DrawUnit>, TerminalError> {
+    ) -> Result<DrawUnit, TerminalError> {
         self.surfaces
             .get_mut(&surface_ref.value)
             .map(|surf: &mut Surface| surf.backward(pos))

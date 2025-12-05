@@ -32,7 +32,7 @@ fn listener(game: &mut Game) {
         },
         None => {}
     }
-    game.add_transformation(game.current_timestamp().add(100), game.current_pointer());
+    game.add_transformation(game.current_timestamp().add(10), game.current_pointer());
 }
 
 fn main() {

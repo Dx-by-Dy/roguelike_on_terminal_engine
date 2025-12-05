@@ -135,7 +135,7 @@ impl Surface {
         self.data[pos.y as usize][pos.x as usize].forward(unit);
     }
 
-    pub fn backward(&mut self, pos: SurfacePosition) -> Option<DrawUnit> {
+    pub fn backward(&mut self, pos: SurfacePosition) -> DrawUnit {
         self.changed_pos.insert(pos);
         self.data[pos.y as usize][pos.x as usize].backward()
     }
@@ -161,9 +161,7 @@ impl Iterator for Surface {
         match self.changed_pos.iter().next().copied() {
             Some(pos) => {
                 self.changed_pos.remove(&pos);
-                self.data[pos.y as usize][pos.x as usize]
-                    .get_unit()
-                    .and_then(|unit| Some((pos, unit)))
+                Some((pos, self.data[pos.y as usize][pos.x as usize].get_unit()))
             }
             None => None,
         }
@@ -180,12 +178,12 @@ impl SurfaceUnit {
         self.history.push(unit);
     }
 
-    pub fn backward(&mut self) -> Option<DrawUnit> {
-        self.history.pop()
+    pub fn backward(&mut self) -> DrawUnit {
+        self.history.pop().unwrap_or_default()
     }
 
-    pub fn get_unit(&mut self) -> Option<DrawUnit> {
-        self.history.last().copied()
+    pub fn get_unit(&mut self) -> DrawUnit {
+        self.history.last().copied().unwrap_or_default()
     }
 }
 

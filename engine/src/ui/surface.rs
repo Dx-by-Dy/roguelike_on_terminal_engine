@@ -126,6 +126,10 @@ impl Surface {
         }
     }
 
+    pub fn get_size(&self) -> Size {
+        self.size
+    }
+
     pub fn forward(&mut self, pos: SurfacePosition, unit: DrawUnit) {
         self.changed_pos.insert(pos);
         self.data[pos.y as usize][pos.x as usize].forward(unit);

@@ -1,6 +1,8 @@
+use crate::component::Component;
 use crossterm::style::{StyledContent, Stylize};
+use engine_macros::Component;
 
-#[derive(Debug, Clone, Copy)]
+#[derive(Component, Debug, Clone, Copy)]
 pub struct DrawUnit {
     ch: char,
     modificator: UnitModificator,

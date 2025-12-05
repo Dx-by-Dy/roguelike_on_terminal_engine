@@ -39,6 +39,10 @@ impl TransformationMaster {
             }
         }
     }
+
+    pub(crate) fn set_pointer(&mut self, pointer: Pointer) {
+        self.current_pointer = pointer
+    }
 }
 
 impl TransformationMasterI for TransformationMaster {

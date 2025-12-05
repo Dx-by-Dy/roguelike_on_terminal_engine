@@ -22,6 +22,14 @@ macro_rules! __delegate_TerminalI {
         }
 
         #[inline(always)]
+        fn get_surface_size(
+            &self,
+            ref_to_surf: crate::component::ref_to_surface::RefToSurface,
+        ) -> Result<crate::component::size::Size, crate::ui::terminal::TerminalError> {
+            self.$field.get_surface_size(ref_to_surf)
+        }
+
+        #[inline(always)]
         fn add_surface(
             &mut self,
             surf_conf: crate::ui::configs::SurfaceConfig,
@@ -105,11 +113,27 @@ macro_rules! __delegate_DataMasterI {
         }
 
         #[inline(always)]
+        fn get_unchecked<T: crate::component::Component>(
+            &self,
+            pointer: crate::component::pointer::Pointer,
+        ) -> &T {
+            self.$field.get_unchecked(pointer)
+        }
+
+        #[inline(always)]
         fn get_mut<T: crate::component::Component>(
             &mut self,
             pointer: crate::component::pointer::Pointer,
         ) -> Result<&mut T, crate::data_master::DataMasterError> {
             self.$field.get_mut(pointer)
+        }
+
+        #[inline(always)]
+        fn get_mut_unchecked<T: crate::component::Component>(
+            &mut self,
+            pointer: crate::component::pointer::Pointer,
+        ) -> &mut T {
+            self.$field.get_mut_unchecked(pointer)
         }
 
         #[inline(always)]

@@ -6,6 +6,8 @@ pub struct Timestamp {
 }
 
 impl Timestamp {
+    pub const ZERO: Self = Self { value: 0 };
+
     pub fn new(value: usize) -> Self {
         Self { value }
     }
@@ -13,6 +15,12 @@ impl Timestamp {
     pub fn next(self) -> Self {
         Self {
             value: self.value + 1,
+        }
+    }
+
+    pub fn add(&self, value: usize) -> Self {
+        Self {
+            value: self.value + value,
         }
     }
 }

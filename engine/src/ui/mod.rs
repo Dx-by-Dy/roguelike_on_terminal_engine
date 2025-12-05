@@ -1,9 +1,8 @@
 pub mod configs;
 pub mod draw_unit;
+pub mod surface;
 pub mod terminal;
 pub mod user_event_gateway;
-
-mod surface;
 
 use crate::ui::{
     configs::UIConfig,

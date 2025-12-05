@@ -1,7 +1,7 @@
 use std::{thread::sleep, time::Duration};
 
 use crate::{
-    component::transformation::Transformation,
+    component::{pointer::Pointer, transformation::Transformation},
     data_master::{DataMaster, DataMasterI},
     transformation_master::{TransformationMaster, TransformationMasterI},
     ui::{
@@ -34,15 +34,22 @@ impl Game {
     pub fn run(mut self) {
         loop {
             while let Some(pointer) = self.transformation_master.next() {
-                (self
-                    .data_master
-                    .get_mut::<Transformation>(pointer)
-                    .copied()
-                    .unwrap()
-                    .tr)(&mut self)
+                self.call(pointer);
             }
 
             sleep(Duration::from_millis(10));
         }
+    }
+
+    pub fn call(&mut self, pointer: Pointer) {
+        let old_pointer = self.transformation_master.current_pointer();
+        self.transformation_master.set_pointer(pointer);
+        (self
+            .data_master
+            .get::<Transformation>(pointer)
+            .copied()
+            .unwrap()
+            .tr)(self);
+        self.transformation_master.set_pointer(old_pointer);
     }
 }

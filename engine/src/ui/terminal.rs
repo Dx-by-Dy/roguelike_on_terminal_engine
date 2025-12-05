@@ -19,6 +19,7 @@ use {
 };
 
 pub trait TerminalI {
+    fn get_surface_size(&self, ref_to_surf: RefToSurface) -> Result<Size, TerminalError>;
     fn redraw(&mut self);
     fn add_surface(&mut self, surf_conf: SurfaceConfig) -> RefToSurface;
     fn update_surface(
@@ -39,6 +40,7 @@ pub trait TerminalI {
     ) -> Result<(), TerminalError>;
 }
 
+#[derive(Debug)]
 pub enum TerminalError {
     NotExistSurface,
 }
@@ -67,7 +69,7 @@ impl Terminal {
             .unwrap();
 
         Self {
-            out: stdout(),
+            out,
             size: config.terminal_size,
             surfaces: HashMap::default(),
         }
@@ -96,6 +98,13 @@ impl TerminalI for Terminal {
             }
         }
         self.out.flush().unwrap();
+    }
+
+    fn get_surface_size(&self, ref_to_surf: RefToSurface) -> Result<Size, TerminalError> {
+        self.surfaces
+            .get(&ref_to_surf.value)
+            .map(|surf| surf.get_size())
+            .ok_or(TerminalError::NotExistSurface)
     }
 
     fn add_surface(&mut self, surf_conf: SurfaceConfig) -> RefToSurface {

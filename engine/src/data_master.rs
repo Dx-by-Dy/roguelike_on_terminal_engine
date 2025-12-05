@@ -16,7 +16,9 @@ pub enum DataMasterError {
 pub trait DataMasterI {
     fn get_pointer_by_name<T: Into<usize>>(&self, name: T) -> Option<Pointer>;
     fn get<T: Component>(&self, pointer: Pointer) -> Result<&T, DataMasterError>;
+    fn get_unchecked<T: Component>(&self, pointer: Pointer) -> &T;
     fn get_mut<T: Component>(&mut self, pointer: Pointer) -> Result<&mut T, DataMasterError>;
+    fn get_mut_unchecked<T: Component>(&mut self, pointer: Pointer) -> &mut T;
     fn set_by_pointer<T: Component>(&mut self, pointer: Pointer, value: T) -> &mut Self;
     fn set<T: Component>(&mut self, value: T) -> &mut Self;
     fn set_name_by_pointer<T: Into<usize>>(&mut self, pointer: Pointer, name: T) -> &mut Self;
@@ -90,5 +92,13 @@ impl DataMasterI for DataMaster {
         let pointer = self.new_pointer;
         self.new_pointer = self.new_pointer.next();
         pointer
+    }
+
+    fn get_unchecked<T: Component>(&self, pointer: Pointer) -> &T {
+        self.get(pointer).unwrap()
+    }
+
+    fn get_mut_unchecked<T: Component>(&mut self, pointer: Pointer) -> &mut T {
+        self.get_mut(pointer).unwrap()
     }
 }

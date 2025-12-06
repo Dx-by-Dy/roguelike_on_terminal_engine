@@ -1,7 +1,5 @@
-use std::{thread::sleep, time::Duration};
-
 use crate::{
-    component::{pointer::Pointer, transformation::Transformation},
+    component::{timestamp::Timestamp, transformation::TransformationInit},
     data_master::{DataMaster, DataMasterI},
     transformation_master::{TransformationMaster, TransformationMasterI},
     ui::{
@@ -32,24 +30,30 @@ impl Game {
     }
 
     pub fn run(mut self) {
+        self.init();
+
         loop {
-            while let Some(pointer) = self.transformation_master.next() {
-                self.call(pointer);
+            while let Some(gtr) = self.transformation_master.next() {
+                gtr(&mut self)
             }
 
-            sleep(Duration::from_millis(10));
+            std::thread::sleep(std::time::Duration::from_millis(10));
         }
     }
 
-    pub fn call(&mut self, pointer: Pointer) {
-        let old_pointer = self.transformation_master.current_pointer();
-        self.transformation_master.set_pointer(pointer);
-        (self
-            .data_master
-            .get::<Transformation>(pointer)
-            .copied()
-            .unwrap()
-            .tr)(self);
-        self.transformation_master.set_pointer(old_pointer);
+    fn init(&mut self) {
+        for tr_init in inventory::iter::<TransformationInit> {
+            if let Some(value) = tr_init.timestamp {
+                self.add_gtr(Timestamp::new(value), (*tr_init).gtr);
+            }
+            if tr_init.set_in_datamaster {
+                self.data_master
+                    .set_name((*tr_init).gtr as usize)
+                    .finalize();
+            }
+            if tr_init.init_gtr {
+                ((*tr_init).gtr)(self);
+            }
+        }
     }
 }

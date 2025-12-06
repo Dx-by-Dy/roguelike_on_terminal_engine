@@ -1,30 +1,27 @@
 use {
-    crate::component::{pointer::Pointer, timestamp::Timestamp},
+    crate::{Gtr, component::timestamp::Timestamp},
     std::collections::BTreeMap,
 };
 
 pub trait TransformationMasterI {
-    fn add_transformation(&mut self, timestamp: Timestamp, transformation_pointer: Pointer);
+    fn add_gtr(&mut self, timestamp: Timestamp, gtr: Gtr);
     fn current_timestamp(&self) -> Timestamp;
-    fn current_pointer(&self) -> Pointer;
 }
 
 #[derive(Default)]
 pub struct TransformationMaster {
     current_timestamp_index: usize,
-    current_pointer: Pointer,
     current_timestamp: Timestamp,
-    index: BTreeMap<Timestamp, Vec<Pointer>>,
+    index: BTreeMap<Timestamp, Vec<Gtr>>,
 }
 
 impl TransformationMaster {
-    pub(crate) fn next(&mut self) -> Option<Pointer> {
+    pub(crate) fn next(&mut self) -> Option<Gtr> {
         match self.index.get(&self.current_timestamp) {
             Some(v) => match v.get(self.current_timestamp_index) {
-                Some(pointer) => {
+                Some(gtr) => {
                     self.current_timestamp_index += 1;
-                    self.current_pointer = *pointer;
-                    Some(self.current_pointer)
+                    Some(*gtr)
                 }
                 None => {
                     self.index.remove(&self.current_timestamp);
@@ -39,25 +36,14 @@ impl TransformationMaster {
             }
         }
     }
-
-    pub(crate) fn set_pointer(&mut self, pointer: Pointer) {
-        self.current_pointer = pointer
-    }
 }
 
 impl TransformationMasterI for TransformationMaster {
-    fn add_transformation(&mut self, timestamp: Timestamp, transformation_pointer: Pointer) {
-        self.index
-            .entry(timestamp)
-            .or_default()
-            .push(transformation_pointer);
+    fn add_gtr(&mut self, timestamp: Timestamp, gtr: Gtr) {
+        self.index.entry(timestamp).or_default().push(gtr);
     }
 
     fn current_timestamp(&self) -> Timestamp {
         self.current_timestamp
-    }
-
-    fn current_pointer(&self) -> Pointer {
-        self.current_pointer
     }
 }

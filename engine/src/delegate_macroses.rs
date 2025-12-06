@@ -72,23 +72,13 @@ macro_rules! __delegate_TerminalI {
 macro_rules! __delegate_TransformationMasterI {
     ($field:ident) => {
         #[inline(always)]
-        fn add_transformation(
-            &mut self,
-            timestamp: crate::component::timestamp::Timestamp,
-            transformation_pointer: crate::component::pointer::Pointer,
-        ) {
-            self.$field
-                .add_transformation(timestamp, transformation_pointer);
+        fn add_gtr(&mut self, timestamp: crate::component::timestamp::Timestamp, gtr: crate::Gtr) {
+            self.$field.add_gtr(timestamp, gtr);
         }
 
         #[inline(always)]
         fn current_timestamp(&self) -> crate::component::timestamp::Timestamp {
             self.$field.current_timestamp()
-        }
-
-        #[inline(always)]
-        fn current_pointer(&self) -> crate::component::pointer::Pointer {
-            self.$field.current_pointer()
         }
     };
 }
@@ -113,27 +103,11 @@ macro_rules! __delegate_DataMasterI {
         }
 
         #[inline(always)]
-        fn get_unchecked<T: crate::component::Component>(
-            &self,
-            pointer: crate::component::pointer::Pointer,
-        ) -> &T {
-            self.$field.get_unchecked(pointer)
-        }
-
-        #[inline(always)]
         fn get_mut<T: crate::component::Component>(
             &mut self,
             pointer: crate::component::pointer::Pointer,
         ) -> Result<&mut T, crate::data_master::DataMasterError> {
             self.$field.get_mut(pointer)
-        }
-
-        #[inline(always)]
-        fn get_mut_unchecked<T: crate::component::Component>(
-            &mut self,
-            pointer: crate::component::pointer::Pointer,
-        ) -> &mut T {
-            self.$field.get_mut_unchecked(pointer)
         }
 
         #[inline(always)]

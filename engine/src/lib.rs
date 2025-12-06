@@ -7,6 +7,8 @@ pub mod game;
 pub mod transformation_master;
 pub mod ui;
 
+pub type Gtr = fn(&mut crate::game::Game);
+
 #[macro_export]
 macro_rules! addr {
     ($func:ident) => {

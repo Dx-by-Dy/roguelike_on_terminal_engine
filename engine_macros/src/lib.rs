@@ -121,7 +121,7 @@ impl Parse for Args {
 }
 
 #[proc_macro_attribute]
-pub fn init_gtr(attr: TokenStream, item: TokenStream) -> TokenStream {
+pub fn register_gtr(attr: TokenStream, item: TokenStream) -> TokenStream {
     let args = if attr.to_string() == "" || attr.to_string() == "()" {
         Args {
             init_gtr: false,

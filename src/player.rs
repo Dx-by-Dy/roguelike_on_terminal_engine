@@ -13,7 +13,7 @@ use engine::{
     },
 };
 
-#[engine_macros::init_gtr(init_gtr)]
+#[engine_macros::register_gtr(init_gtr)]
 pub fn player(game: &mut Game) {
     game.set(SurfacePosition::new(10, 10))
         .set(DrawUnit::new('@', UnitModificator::DFLT_UNIT_MODIFICATOR))
@@ -27,7 +27,7 @@ pub fn player(game: &mut Game) {
 
 /// Ожидается, что по данному указателю будет
 /// `UserEvent` в котором лежит нажатие клавиши.
-#[engine_macros::init_gtr(set_in_datamaster)]
+#[engine_macros::register_gtr(set_in_datamaster)]
 pub fn player_move(game: &mut Game) {
     let cp = game.get_pointer_by_name_unchecked(addr!(player_move));
     match game.get::<UserEvent>(cp).unwrap() {

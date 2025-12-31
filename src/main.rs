@@ -10,7 +10,7 @@ use engine::{
 };
 use roguelike::player::player_move;
 
-#[engine_macros::init_gtr(timestamp = 0)]
+#[engine_macros::register_gtr(timestamp = 0)]
 fn listener(game: &mut Game) {
     match game.get_one_event_and_drain() {
         Some(event) => match event {
@@ -27,7 +27,7 @@ fn listener(game: &mut Game) {
 
 fn main() {
     let ui_config = UIConfig {
-        terminal_size: Size::new(80, 40),
+        terminal_size: Size::new(120, 40),
     };
 
     let mut game = Game::new(ui_config);
